@@ -1,0 +1,32 @@
+[
+    {
+        "tag": "#1",
+        "messages": [
+            {
+                "authorID": 1,
+                "text": "Testing if the message route can ",
+                "messID": 1 
+            }, 
+            {
+                "authorID": 2,
+                "text":"Testing if the message route can ",
+                "messID": 2
+            }
+        ]
+    },
+    {
+        "tag": "#2",
+        "messages": [
+            {
+                "authorID": 1,
+                "text":"Testing if the message route can ",
+                "messID": 1
+            },
+            {
+                "authorID": 3,
+                "text":"Testing if the message route can ",
+                "messID": 2
+            }
+        ]
+    }
+]
