@@ -1,15 +1,17 @@
 const express = require("express");
-const {
-  getMessagesMember,
-  postMessage,
-  updateMessage,
-  deleteMessage,
-} = require("../controllers/groupsMessageController");
 const router = express.Router();
 
-router.get("/:ID/:memberID", getMessagesMember);
-router.post("/:ID/:memberID", postMessage);
-router.put("/:ID/:memberID/:messageID", updateMessage);
-router.delete("/:ID/:memberID/:messageID", deleteMessage);
+router.get("/:ID/:groupID", (req, res) => {
+  res.send("get request");
+});
+router.post("/post/:ID/groupID/:memberID", (req, res) => {
+  res.send("post request");
+});
+router.put("/put/:ID/:groupID/:memberID", (req, res) => {
+  res.send("put request");
+});
+router.delete("/:ID/:groupID/:memberID", (req, res) => {
+  res.send("delete request");
+});
 
 module.exports = router;

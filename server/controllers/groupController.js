@@ -1,5 +1,6 @@
 const events = require("events");
 let groups, json, users;
+let uids = [];
 const { readFile, writeFile } = require("fs");
 const util = require("util");
 const readFilePromise = util.promisify(readFile);
@@ -11,6 +12,7 @@ readFilePromise(cd, "utf8")
   .then((res) => {
     json = res;
     groups = JSON.parse(res);
+    return json, groups;
   })
   .catch((err) => console.log(err));
 readFilePromise(cdUser, "utf8")
@@ -25,7 +27,12 @@ eventEmitter.on("get", () => {
     })
     .catch((err) => console.log(err));
   readFilePromise(cdUser, "utf8")
-    .then((res) => (users = JSON.parse(res)))
+    .then((res) => {
+      users = JSON.parse(res);
+      uids = [];
+      users.map((user) => uids.push(user.uid));
+      return uids, users;
+    })
     .catch((err) => console.log(err));
 });
 eventEmitter.on("change", () => {
@@ -40,18 +47,24 @@ eventEmitter.on("change", () => {
       return groups, json;
     })
     .catch((err) => console.log(err));
-});
-eventEmitter.on("getUsers", function () {
-  readFilePromise();
+  readFilePromise(cdUser, "utf8")
+    .then((res) => {
+      users = JSON.parse(res);
+      uids = [];
+      users.map((user) => uids.push(user.uid));
+      return users, uids;
+    })
+    .catch((err) => console.log(err));
 });
 
 const getGroups = (req, res) => {
   eventEmitter.emit("get");
   res.json(groups);
 };
+
 const authentification = (req, res) => {
-  const { id, memberID } = req.params;
   eventEmitter.emit("get");
+  const { id, memberID } = req.params;
   console.log(groups);
   const group = groups.filter((grp) => {
     return grp.uid === Number(id) && grp.members.includes(Number(memberID));
@@ -59,13 +72,16 @@ const authentification = (req, res) => {
   console.log(groups);
   res.json(group);
 };
+
 const createGroup = ({ body }, res) => {
+  eventEmitter.emit("get");
   const { name, members, admin, password } = body;
   const id = Date.now();
+  const member = members.filter((mem) => {});
   const tag = `#${groups.length + 1}`;
   groups.push({
     name,
-    members,
+    members: member,
     admin,
     password,
     uid: id,
@@ -78,6 +94,7 @@ const createGroup = ({ body }, res) => {
   );
   eventEmitter.emit("change");
 };
+
 const admin = (req, res) => {
   eventEmitter.emit("get");
   const { ID, adminID, newAdminID } = req.params;

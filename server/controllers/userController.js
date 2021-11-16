@@ -39,9 +39,10 @@ const getUser = (req, res) => {
 const createUser = ({ body }, res) => {
   eventEmitter.emit("getting");
   const [{ name, password }, id] = [body, Date.now()];
+  const tag = `#${users.length + 1}`;
   console.log(name, password, id);
   if (
-    !users.filter(({ uid }) => {
+    users.filter(({ uid }) => {
       uid === id;
     })
   ) {
@@ -49,6 +50,7 @@ const createUser = ({ body }, res) => {
       name,
       password,
       uid: id,
+      tag,
     });
     eventEmitter.emit("change");
     res.json(users.filter(({ uid }) => uid === id));
@@ -59,7 +61,12 @@ const createUser = ({ body }, res) => {
 
 const getUserByID = ({ params }, res) => {
   const { id } = params;
-  res.json(users.filter(({ uid }) => uid === Number(id)));
+  res.json(users.find(({ uid }) => uid === Number(id)));
+};
+
+const getUserByTag = ({ params }, res) => {
+  const { tag } = params;
+  res.json(users.find(({ tag: pTag }) => pTag === tag));
 };
 
 module.exports = { getUser, createUser, getUserByID };
