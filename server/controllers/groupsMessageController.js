@@ -8,14 +8,24 @@ const cd = path.resolve(__dirname, "../JSON/groupMessage.json");
 const cdUser = path.resolve(__dirname, "../JSON/users.json");
 const cdGroups = path.resolve(__dirname, "../JSON/groups.json");
 let users, groups, messages;
-let uids = [];
+let uids,
+  groupsuids = [];
 
 eventEmitter.on("get", function () {
   readFilePromise(cd, "utf8")
     .then((res) => (messages = JSON.parse(res)))
     .catch((err) => console.log(err));
   readFilePromise(cdUser, "utf8")
-    .then((res) => (users = JSON.parse(res)))
+    .then((res) => {
+      users = JSON.parse(res);
+      uids = [];
+      users.map((user) => uids.push(user.uid));
+      groupsuids = [];
+      groups.map((group) => {
+        groupsuids.push(group.uid);
+      });
+      return uids, users, groupsuids;
+    })
     .catch((err) => console.log(err));
   readFilePromise(cdGroups, "utf8")
     .then((res) => (groups = JSON.parse(res)))
@@ -29,12 +39,95 @@ eventEmitter.emit("post", function () {
   });
 });
 
-const postMessage = (req, res) => {};
+const postMessage = (req, res) => {
+  eventEmitter.emit("get");
+  const { groupID, memberID } = req.params;
+  const id = Date.now();
+  const { text } = req.body;
+  if (uids.includes(memberID) && groupsuids.includes(groupID)) {
+    const newMesage = {
+      authorID: memberID,
+      text,
+      date: id,
+      mID: id,
+      type: 1,
+    };
+    res.json(newMesage);
+    eventEmitter.emit("post");
+  } else {
+    res.json({ code: null, data: null });
+  }
+};
 
-const getMessages = (req, res) => {};
+const initMessages = (params) => {
+  eventEmitter.emit("get");
+  const { groupTag } = params.groupTag;
+  messages.push({
+    groupTag,
+    messages: [],
+  });
+  eventEmitter.emit("post");
+};
 
-const editMessage = (req, res) => {};
+const getMessages = (req, res) => {
+  eventEmitter.emit("get");
+  const { groupID, ID } = req.params;
 
-const deleteMessage = (req, res) => {};
+  const message = messages.filter((element) => (element.tag = `#${groupID}`));
+  if (uids.includes(ID)) {
+    res.json(message);
+  } else {
+    res.json({ code: null, data: null });
+  }
+};
 
-module.exports = { postMessage, getMessages, editMessage, deleteMessage };
+const logMessages = (req, res) => {
+  eventEmitter.emit("get");
+  const { groupID } = req.params;
+  const { text } = req.body;
+  const id = Date.now();
+  const message = {
+    authorID: null,
+    text,
+    date: id,
+    mID: id,
+    type: 0,
+  };
+  messages.push(message);
+  eventEmitter.emit("post");
+};
+
+const editMessage = (req, res) => {
+  eventEmitter.emit("get");
+  let mIDs = [];
+  const { ID, groupID, memberID } = req.params;
+  const { text } = req.body;
+  const { messages: updateMessageArray } = messages.filter(
+    (element) => element.groupTag === `#${groupID}`
+  );
+  messages.map((element) => mIDs.push(element.authorID));
+  if (mIDs.includes(Number(memberID))) {
+    const news = updateMessageArray.find(
+      (element) => element.mID === Number(ID)
+    );
+    if (updateMessageArray) {
+      news.text = text;
+
+      res.json(updateMessageArray);
+
+      eventEmitter.emit("post");
+    } else {
+      res.status(404).json({ code: null, data: null });
+    }
+  } else {
+    res.json({ code: null, data: null });
+  }
+};
+
+module.exports = {
+  postMessage,
+  getMessages,
+  editMessage,
+  initMessages,
+  logMessages,
+};
