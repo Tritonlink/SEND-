@@ -8,6 +8,7 @@ const path = require("path");
 const cd = path.resolve(__dirname, "../JSON/groups.json");
 const cdUser = path.resolve(__dirname, "../JSON/users.json");
 const eventEmitter = new events();
+const { initMessages } = require("../controllers/groupsMessageController");
 readFilePromise(cd, "utf8")
   .then((res) => {
     json = res;
@@ -87,6 +88,7 @@ const createGroup = ({ body }, res) => {
     uid: id,
     tag,
   });
+  initMessages();
   res.json(
     groups.filter(({ uid }) => {
       return uid === Number(id);

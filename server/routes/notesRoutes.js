@@ -1,6 +1,9 @@
-const addNotes = (req, res) => {};
-const updateNotes = (res, res) => {};
-const blocNotes = (req, res) => {};
-const deleteNote = (req, res) => {};
+const express = require("express");
+const router = express.Router();
 
-module.exports = { addNotes, updateNotes, blocNotes, deleteNote };
+router.get("/:ID");
+router.post("/:ID");
+router.put("/:ID");
+router.delete("/:ID");
+
+module.exports = router;

@@ -64,9 +64,4 @@ const getUserByID = ({ params }, res) => {
   res.json(users.find(({ uid }) => uid === Number(id)));
 };
 
-const getUserByTag = ({ params }, res) => {
-  const { tag } = params;
-  res.json(users.find(({ tag: pTag }) => pTag === tag));
-};
-
 module.exports = { getUser, createUser, getUserByID };
