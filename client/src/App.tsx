@@ -1,15 +1,17 @@
-import * as React from 'react';
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import React from 'react';
+import './App.css';
+import { useAppSelector, useAppDispatch } from './app/hooks';
+import {increment, decrement} from "./features/counter"
 
 function App() {
+  const count = useAppSelector<number>((state) => state.counter.value)
+  const dispatch = useAppDispatch()
+  console.log(count)
   return (
-    <Router>
-      <Routes>
-      <Route path='/'>
-        <Route path="hehe" element={<><pre>hehe</pre></>}></Route>
-      </Route>
-      </Routes>
-    </Router>
+    <div>
+      <h1>Hh{count}</h1>
+      <button onClick={() => dispatch(increment())}></button>
+    </div>
   );
 }
 
