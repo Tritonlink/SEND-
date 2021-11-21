@@ -1,6 +1,7 @@
 const events = require("events");
-let groups, json, users;
-let uids = [];
+let users,
+  groups,
+  uids = [];
 const { readFile, writeFile } = require("fs");
 const util = require("util");
 const readFilePromise = util.promisify(readFile);
@@ -8,12 +9,11 @@ const path = require("path");
 const cd = path.resolve(__dirname, "../JSON/groups.json");
 const cdUser = path.resolve(__dirname, "../JSON/users.json");
 const eventEmitter = new events();
-const { initMessages } = require("../controllers/groupsMessageController");
+const { initMessages } = require("./groupsMessageController");
 readFilePromise(cd, "utf8")
   .then((res) => {
     json = res;
     groups = JSON.parse(res);
-    return json, groups;
   })
   .catch((err) => console.log(err));
 readFilePromise(cdUser, "utf8")
@@ -147,5 +147,7 @@ const member = (req, res) => {
     res.json({ success: false, code: 501 });
   }
 };
+
+console.log(getGroups());
 
 module.exports = { getGroups, authentification, createGroup, admin, member };

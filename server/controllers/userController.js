@@ -5,6 +5,7 @@ const { readFile, writeFile } = require("fs");
 const readFilePromise = promisify(readFile);
 const events = require("events");
 const path = require("path");
+const { initNotes } = require("./noteController");
 const cd = path.resolve(__dirname, "../JSON/users.json");
 const eventEmitter = new events();
 readFilePromise(cd, "utf8").then((res) => (users = JSON.parse(res)));
@@ -52,6 +53,10 @@ const createUser = ({ body }, res) => {
       uid: id,
       tag,
     });
+    const params = {
+      id,
+    };
+    initNotes(params);
     eventEmitter.emit("change");
     res.json(users.filter(({ uid }) => uid === id));
   } else {

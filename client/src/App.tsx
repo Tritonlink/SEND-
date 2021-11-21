@@ -1,17 +1,21 @@
 import React from 'react';
-import './App.css';
-import { useAppSelector, useAppDispatch } from './app/hooks';
-import {increment, decrement} from "./features/counter"
+import Inscription from './pages/Inscription';
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
+
 
 function App() {
-  const count = useAppSelector<number>((state) => state.counter.value)
-  const dispatch = useAppDispatch()
-  console.log(count)
+
   return (
-    <div>
-      <h1>Hh{count}</h1>
-      <button onClick={() => dispatch(increment())}></button>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/">
+          <Route index element={<Inscription/>}></Route>
+        </Route>
+        <Route path="*" element={<div className='not-found'>
+          <pre>Canno't found </pre>
+        </div>}></Route>
+      </Routes>
+    </Router>
   );
 }
 
