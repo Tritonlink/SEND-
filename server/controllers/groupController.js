@@ -148,6 +148,4 @@ const member = (req, res) => {
   }
 };
 
-console.log(getGroups());
-
 module.exports = { getGroups, authentification, createGroup, admin, member };

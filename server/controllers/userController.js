@@ -65,8 +65,17 @@ const createUser = ({ body }, res) => {
 };
 
 const getUserByID = ({ params }, res) => {
+  eventEmitter.emit("get");
   const { id } = params;
   res.json(users.find(({ uid }) => uid === Number(id)));
+};
+
+const getUserByTag = (req, res) => {
+  eventEmitter.emit("get");
+  const { id } = req.params;
+  const userTag = users.find((el) => el.tag === `#${id}`);
+  userTag.password = null;
+  res.json(userTag);
 };
 
 module.exports = { getUser, createUser, getUserByID };
